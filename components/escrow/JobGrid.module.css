@@ -1,0 +1,231 @@
+.wrap {
+  padding: 28px 32px 64px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 22px;
+}
+
+.sectionTitle {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-100);
+}
+
+.count {
+  font-size: 12px;
+  color: var(--text-400);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
+}
+
+/* ─── Card ──────────────────────────────────────────────────────────────── */
+.card {
+  display: flex;
+  flex-direction: column;
+  background: var(--surface-2);
+  border: 1px solid var(--border-2);
+  border-radius: var(--r-lg);
+  padding: 20px;
+  text-decoration: none;
+  color: inherit;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.2s, transform 0.2s;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: transparent;
+  transition: background 0.2s;
+}
+
+.card:hover {
+  border-color: var(--teal-600);
+  transform: translateY(-2px);
+}
+.card:hover::before { background: var(--teal-500); }
+
+.cardTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.catPill {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--teal-500);
+  background: var(--teal-subtle);
+  border: 1px solid var(--teal-glow);
+  padding: 3px 8px;
+  border-radius: var(--r-xs);
+}
+
+.amount {
+  font-family: var(--font-display);
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--text-100);
+  text-align: right;
+  line-height: 1.2;
+}
+
+.amountSub {
+  display: block;
+  font-family: var(--font-body);
+  font-size: 11px;
+  color: var(--text-400);
+  font-weight: 400;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-100);
+  line-height: 1.35;
+  margin-bottom: 8px;
+}
+
+.desc {
+  font-size: 12px;
+  color: var(--text-200);
+  line-height: 1.65;
+  margin-bottom: 14px;
+
+  /* clamp to 3 lines */
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.tags {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+  margin-top: auto;
+}
+
+.tag {
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: var(--r-xs);
+  background: var(--surface-3);
+  color: var(--text-300);
+  border: 1px solid var(--border-2);
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  border-top: 1px solid var(--border-1);
+  padding-top: 14px;
+}
+
+.client {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--surface-3);
+  border: 1px solid var(--border-3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--teal-400);
+  font-family: var(--font-display);
+}
+
+.clientName {
+  font-size: 12px;
+  color: var(--text-200);
+  font-weight: 500;
+  font-family: var(--font-mono);
+}
+
+.worldTag {
+  font-size: 10px;
+  color: var(--teal-500);
+  margin-top: 1px;
+}
+
+.right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  border: 1px solid;
+}
+
+.statusDot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.status_Open {
+  background: rgba(13, 158, 117, 0.08);
+  color: var(--teal-400);
+  border-color: var(--teal-600);
+}
+
+.status_InProgress {
+  background: rgba(56, 114, 235, 0.08);
+  color: #6699ee;
+  border-color: rgba(56, 114, 235, 0.3);
+}
+
+.status_Delivered {
+  background: rgba(186, 117, 23, 0.08);
+  color: #c8921e;
+  border-color: rgba(186, 117, 23, 0.3);
+}
+
+.status_Completed {
+  background: rgba(50, 180, 100, 0.08);
+  color: #4acc80;
+  border-color: rgba(50, 180, 100, 0.3);
+}
+
+.deadline {
+  font-size: 11px;
+  color: var(--text-400);
+}

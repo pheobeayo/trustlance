@@ -1,0 +1,131 @@
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,400&family=DM+Mono:wght@400;500&display=swap');
+
+/* ─── Design Tokens ──────────────────────────────────────────────────────── */
+:root {
+  /* Core palette */
+  --teal-50:  #e4f7f0;
+  --teal-100: #b3e9d5;
+  --teal-300: #3dc99a;
+  --teal-400: #14c490;   /* bright accent */
+  --teal-500: #0d9e75;   /* primary */
+  --teal-600: #0a7a5a;   /* dim / border active */
+  --teal-700: #075c43;
+  --teal-900: #021f16;
+
+  --black:     #050807;
+  --surface-0: #080d0a;  /* page bg */
+  --surface-1: #0c1410;  /* nav / raised panels */
+  --surface-2: #101a15;  /* cards */
+  --surface-3: #162119;  /* input backgrounds, inner cards */
+  --surface-4: #1c2b22;  /* hover states */
+
+  --border-1: #182419;   /* subtlest border */
+  --border-2: #1f3028;   /* default card border */
+  --border-3: #2a4035;   /* stronger border */
+
+  --text-100: #e8f3ec;   /* primary text */
+  --text-200: #9dbfae;   /* secondary */
+  --text-300: #5a8a72;   /* muted */
+  --text-400: #3a5c4a;   /* very muted */
+
+  /* Semantic */
+  --teal-glow:   rgba(13, 158, 117, 0.15);
+  --teal-subtle: rgba(13, 158, 117, 0.07);
+  --teal-pulse:  rgba(20, 196, 144, 0.25);
+
+  /* Spacing */
+  --nav-height: 60px;
+
+  /* Radius */
+  --r-xs: 6px;
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-xl: 20px;
+
+  /* Fonts */
+  --font-display: 'Syne', sans-serif;
+  --font-body:    'DM Sans', sans-serif;
+  --font-mono:    'DM Mono', monospace;
+}
+
+/* ─── Reset ──────────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  background-color: var(--surface-0);
+  color: var(--text-100);
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* ─── Utility ────────────────────────────────────────────────────────────── */
+.font-display { font-family: var(--font-display); }
+.font-mono    { font-family: var(--font-mono); }
+
+.text-primary   { color: var(--text-100); }
+.text-secondary { color: var(--text-200); }
+.text-muted     { color: var(--text-300); }
+.text-teal      { color: var(--teal-400); }
+
+/* ─── Scrollbar ──────────────────────────────────────────────────────────── */
+::-webkit-scrollbar              { width: 6px; height: 6px; }
+::-webkit-scrollbar-track        { background: var(--surface-0); }
+::-webkit-scrollbar-thumb        { background: var(--border-3); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover  { background: var(--teal-600); }
+
+/* ─── Selection ──────────────────────────────────────────────────────────── */
+::selection { background: var(--teal-glow); color: var(--teal-400); }
+
+/* ─── Focus visible ─────────────────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--teal-500);
+  outline-offset: 2px;
+}
+
+/* ─── Animations ─────────────────────────────────────────────────────────── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position:  400px 0; }
+}
+
+.animate-fade-up {
+  animation: fadeUp 0.4s ease both;
+}
+
+.stagger-1  { animation-delay: 0.05s; }
+.stagger-2  { animation-delay: 0.10s; }
+.stagger-3  { animation-delay: 0.15s; }
+.stagger-4  { animation-delay: 0.20s; }
+.stagger-5  { animation-delay: 0.25s; }
+.stagger-6  { animation-delay: 0.30s; }
+
+/* ─── Skeleton loader ────────────────────────────────────────────────────── */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--surface-2) 25%,
+    var(--surface-3) 50%,
+    var(--surface-2) 75%
+  );
+  background-size: 400px 100%;
+  animation: shimmer 1.4s infinite;
+  border-radius: var(--r-sm);
+}
