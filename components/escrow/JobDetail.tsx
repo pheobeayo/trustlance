@@ -1,323 +1,226 @@
 'use client'
 import { useState } from 'react'
 import Link from 'next/link'
+import { ArrowLeft, ShieldCheck, Zap, CheckCircle2 } from 'lucide-react'
 import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
 import { base } from 'wagmi/chains'
-import { parseUnits } from 'viem'
-import type { Job, DepositToken } from '@/types'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { Separator } from '@/components/ui/separator'
+import { Input } from '@/components/ui/input'
+import { SlidingLineGrid } from '@/components/ui-custom/SlidingGrid'
+import type { Job } from '@/types'
 import { DEPOSIT_TOKENS } from '@/types'
 import { formatUSDC, shortAddress } from '@/lib/mockData'
-import { TRUSTLANCE_ABI, TRUSTLANCE_ADDRESS, ERC20_ABI, USDC_ADDRESS } from '@/lib/contracts'
+import { TRUSTLANCE_ABI, TRUSTLANCE_ADDRESS } from '@/lib/contracts'
 import { WorldIDVerifyModal } from './WorldIDVerifyModal'
-import styles from './JobDetail.module.css'
+import { cn } from '@/lib/utils'
 
 const STATUS_LABELS: Record<string, string> = {
-  Open: 'Open', InProgress: 'In Progress', Delivered: 'In Review',
-  Completed: 'Completed', Reclaimed: 'Reclaimed',
+  Open:'Open', InProgress:'In Progress', Delivered:'In Review', Completed:'Completed', Reclaimed:'Reclaimed'
 }
 
-const ETH_PRICE_USD = 2750  // mock — replace with Chainlink feed
+const TL_STEPS = [
+  { label: 'Job Created',        sub: 'Funds deposited & locked in escrow'  },
+  { label: 'Client Verified',    sub: 'World ID confirmed — unique human'    },
+  { label: 'Freelancer Accepts', sub: 'Verified freelancer accepts the job'  },
+  { label: 'Work Delivered',     sub: 'IPFS deliverable submitted'           },
+  { label: 'Payment Released',   sub: 'Via KeeperHub — SLA guaranteed'       },
+]
 
-interface TimelineStep {
-  label: string
-  sub: string
-  state: 'done' | 'current' | 'upcoming'
-}
-
-function getTimeline(status: string): TimelineStep[] {
-  const steps = [
-    { label: 'Job Created',        sub: 'Funds deposited & locked in escrow' },
-    { label: 'Client Verified',    sub: 'World ID confirmed — unique human'  },
-    { label: 'Freelancer Accepts', sub: 'Verified freelancer accepts the job' },
-    { label: 'Work Delivered',     sub: 'IPFS deliverable submitted'         },
-    { label: 'Payment Released',   sub: 'Via KeeperHub — SLA guaranteed'     },
-  ]
-  const doneCount =
-    status === 'Open'       ? 2 :
-    status === 'InProgress' ? 3 :
-    status === 'Delivered'  ? 4 :
-    5
-
-  return steps.map((s, i) => ({
-    ...s,
-    state: i < doneCount ? 'done' : i === doneCount ? 'current' : 'upcoming',
-  }))
+function getDoneCount(s: string) {
+  return s==='Open'?2:s==='InProgress'?3:s==='Delivered'?4:5
 }
 
 export function JobDetail({ job }: { job: Job }) {
   const { address, isConnected } = useAccount()
-  const [selectedToken, setSelectedToken] = useState<DepositToken>('ETH')
-  const [showVerifyModal, setShowVerifyModal] = useState(false)
-  const [deliverableUrl, setDeliverableUrl] = useState('')
+  const [selectedToken, setSelectedToken] = useState('ETH')
+  const [showVerify, setShowVerify]       = useState(false)
+  const [delivUrl, setDelivUrl]           = useState('')
 
-  /* ── Verification check ─────────────────────────────────────────────── */
   const { data: isVerified } = useReadContract({
-    address: TRUSTLANCE_ADDRESS[base.id],
-    abi: TRUSTLANCE_ABI,
-    functionName: 'isVerified',
-    args: address ? [address] : undefined,
-    query: { enabled: !!address },
+    address: TRUSTLANCE_ADDRESS[base.id], abi: TRUSTLANCE_ABI, functionName: 'isVerified',
+    args: address ? [address] : undefined, query: { enabled: !!address },
   })
-
-  /* ── Contract writes ────────────────────────────────────────────────── */
   const { writeContract, data: txHash, isPending } = useWriteContract()
   const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({ hash: txHash })
+  const busy = isPending || isConfirming
 
-  const isClient    = address?.toLowerCase() === job.client.toLowerCase()
-  const isFreelancer = address && job.freelancer
-    ? address.toLowerCase() === job.freelancer.toLowerCase()
-    : false
+  const isClient     = address?.toLowerCase() === job.client.toLowerCase()
+  const isFreelancer = address && job.freelancer ? address.toLowerCase() === job.freelancer.toLowerCase() : false
+  const doneCount    = getDoneCount(job.status)
+  const ethAmt       = (Number(job.amountUSDC) / 1e6 / 2750).toFixed(4)
 
-  /* ── Actions ────────────────────────────────────────────────────────── */
-  function handleAcceptJob() {
-    if (!isVerified) { setShowVerifyModal(true); return }
-    writeContract({
-      address: TRUSTLANCE_ADDRESS[base.id],
-      abi: TRUSTLANCE_ABI,
-      functionName: 'acceptJob',
-      args: [BigInt(job.id)],
-    })
+  function handleAccept() {
+    if (!isVerified) { setShowVerify(true); return }
+    writeContract({ address: TRUSTLANCE_ADDRESS[base.id], abi: TRUSTLANCE_ABI, functionName: 'acceptJob', args: [BigInt(job.id)] })
   }
-
-  function handleSubmitWork() {
-    if (!deliverableUrl) return
-    writeContract({
-      address: TRUSTLANCE_ADDRESS[base.id],
-      abi: TRUSTLANCE_ABI,
-      functionName: 'submitWork',
-      args: [BigInt(job.id), deliverableUrl],
-    })
+  function handleSubmit() {
+    if (!delivUrl) return
+    writeContract({ address: TRUSTLANCE_ADDRESS[base.id], abi: TRUSTLANCE_ABI, functionName: 'submitWork', args: [BigInt(job.id), delivUrl] })
   }
-
-  function handleApproveRelease() {
-    // In production, this call is routed via KeeperHub SDK
-    writeContract({
-      address: TRUSTLANCE_ADDRESS[base.id],
-      abi: TRUSTLANCE_ABI,
-      functionName: 'approveAndRelease',
-      args: [BigInt(job.id)],
-    })
-  }
-
-  function handleReclaim() {
-    writeContract({
-      address: TRUSTLANCE_ADDRESS[base.id],
-      abi: TRUSTLANCE_ABI,
-      functionName: 'reclaimAfterTimeout',
-      args: [BigInt(job.id)],
-    })
-  }
-
-  /* ── Derived ────────────────────────────────────────────────────────── */
-  const usdcAmt  = formatUSDC(job.amountUSDC)
-  const ethAmt   = (Number(job.amountUSDC) / 1e6 / ETH_PRICE_USD).toFixed(4)
-  const timeline = getTimeline(job.status)
-
-  /* ── CTA button logic ───────────────────────────────────────────────── */
-  function renderCTA() {
-    const busy = isPending || isConfirming
-    const busyLabel = isConfirming ? 'Confirming…' : 'Sending…'
-
-    if (!isConnected) return (
-      <div className={styles.ctaNote}>Connect your wallet to interact</div>
-    )
-
-    if (job.status === 'Open' && !isClient) return (
-      <button
-        className={styles.ctaBtn}
-        onClick={handleAcceptJob}
-        disabled={busy}
-      >
-        {busy ? busyLabel : isVerified ? 'Accept Job' : 'Verify & Accept →'}
-      </button>
-    )
-
-    if (job.status === 'InProgress' && isFreelancer) return (
-      <div className={styles.submitWrap}>
-        <input
-          className={styles.delivInput}
-          placeholder="IPFS CID or deliverable URL"
-          value={deliverableUrl}
-          onChange={e => setDeliverableUrl(e.target.value)}
-        />
-        <button
-          className={styles.ctaBtn}
-          onClick={handleSubmitWork}
-          disabled={busy || !deliverableUrl}
-        >
-          {busy ? busyLabel : 'Submit Deliverable'}
-        </button>
-      </div>
-    )
-
-    if (job.status === 'Delivered' && isClient) return (
-      <div>
-        <button className={styles.ctaBtn} onClick={handleApproveRelease} disabled={busy}>
-          {busy ? busyLabel : 'Approve & Release via KeeperHub'}
-        </button>
-        <p className={styles.keeperNote}>
-          <span className={styles.keeperDot} />
-          SLA-backed execution · automatic retry · audit trail
-        </p>
-      </div>
-    )
-
-    if ((job.status === 'InProgress' || job.status === 'Delivered') && isFreelancer) {
-      const timeoutDate = new Date((job.acceptedAt + 30 * 86400) * 1000)
-      const canReclaim  = Date.now() > timeoutDate.getTime()
-      return (
-        <div>
-          {canReclaim ? (
-            <button className={styles.ctaBtn} onClick={handleReclaim} disabled={busy}>
-              {busy ? busyLabel : 'Reclaim After Timeout'}
-            </button>
-          ) : (
-            <div className={styles.ctaNote}>
-              Timeout available: {timeoutDate.toLocaleDateString()}
-            </div>
-          )}
-        </div>
-      )
-    }
-
-    if (isSuccess) return (
-      <div className={styles.successMsg}>✓ Transaction confirmed</div>
-    )
-
-    return null
+  function handleRelease() {
+    writeContract({ address: TRUSTLANCE_ADDRESS[base.id], abi: TRUSTLANCE_ABI, functionName: 'approveAndRelease', args: [BigInt(job.id)] })
   }
 
   return (
     <>
-      <div className={styles.layout}>
-        {/* ── Main panel ── */}
-        <div className={styles.main}>
-          <Link href="/jobs" className={styles.back}>
-            ← Back to jobs
-          </Link>
+      <div className="flex flex-col lg:grid lg:grid-cols-[1fr_340px] min-h-[calc(100vh-64px)]">
+        {/* ── Main ── */}
+        <div className="relative overflow-hidden p-5 md:p-10 lg:border-r border-[#1e2f24]">
+          <SlidingLineGrid speed={0.1} />
+          <div className="relative z-10">
+            <Link href="/jobs" className="inline-flex items-center gap-2 text-[12px] text-[#344d3f] hover:text-[#14c490] transition-colors mb-6">
+              <ArrowLeft className="size-3.5" /> Back to jobs
+            </Link>
 
-          <div className={styles.metaRow}>
-            <span className={styles.catPill}>{job.category}</span>
-            <span className={`${styles.status} ${styles[`status_${job.status}`]}`}>
-              <span className={styles.statusDot} />
-              {STATUS_LABELS[job.status]}
-            </span>
-          </div>
-
-          <h1 className={styles.title}>{job.title}</h1>
-
-          <div className={styles.metaGrid}>
-            <div className={styles.metaItem}>
-              <strong>{job.deadline ? new Date(job.deadline).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : '—'}</strong>
-              <span>Deadline</span>
+            <div className="flex flex-wrap items-center gap-2 mb-3">
+              <Badge className="text-[10px] font-bold tracking-wider uppercase text-[#0d9e75] bg-[#0d9e75]/10 border border-[#0d9e75]/20 rounded">{job.category}</Badge>
+              <Badge variant="outline" className="text-[11px] font-semibold text-[#14c490] border-[#0d9e75]/40 rounded-full gap-1.5">
+                <span className="size-1.5 rounded-full bg-[#14c490] animate-pulse" />{STATUS_LABELS[job.status]}
+              </Badge>
             </div>
-            <div className={styles.metaItem}>
-              <strong>{job.postedAt ? new Date(job.postedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '—'}</strong>
-              <span>Posted</span>
-            </div>
-            <div className={styles.metaItem}>
-              <strong>{shortAddress(job.client)}</strong>
-              <span>Client</span>
-            </div>
-          </div>
 
-          <hr className={styles.divider} />
+            <h1 className="text-[clamp(22px,3.5vw,34px)] font-extrabold leading-[1.15] tracking-tight text-[#e5f2ea] mb-5">{job.title}</h1>
 
-          <div className={styles.body}>
-            {job.description?.split('\n').map((p, i) => <p key={i}>{p}</p>)}
-          </div>
-
-          <div className={styles.skillsSection}>
-            <div className={styles.sectionLabel}>Required Skills</div>
-            <div className={styles.skillsRow}>
-              {job.skills?.map(s => (
-                <span key={s} className={styles.skill}>{s}</span>
+            <div className="flex flex-wrap gap-6 mb-6">
+              {[
+                { label:'Deadline', val: job.deadline ? new Date(job.deadline).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}) : '—' },
+                { label:'Posted',   val: job.postedAt  ? new Date(job.postedAt).toLocaleDateString('en-US',{month:'short',day:'numeric'}) : '—' },
+                { label:'Client',   val: shortAddress(job.client) },
+              ].map(m => (
+                <div key={m.label}>
+                  <div className="text-[13px] font-semibold text-[#e5f2ea] font-mono">{m.val}</div>
+                  <div className="text-[11px] text-[#344d3f]">{m.label}</div>
+                </div>
               ))}
             </div>
-          </div>
 
-          <hr className={styles.divider} />
+            <Separator className="bg-[#1e2f24] mb-6" />
 
-          <div className={styles.sectionLabel} style={{ marginBottom: '16px' }}>Escrow Timeline</div>
-          <div className={styles.timeline}>
-            {timeline.map((step, i) => (
-              <div key={i} className={styles.tlRow}>
-                <div className={styles.tlCol}>
-                  <div className={`${styles.tlDot} ${styles[`tl_${step.state}`]}`}>
-                    {step.state === 'done' ? '✓' : i + 1}
+            <div className="text-[14px] text-[#95b8a5] leading-[1.85] space-y-4 mb-6">
+              {job.description?.split('\n').map((p, i) => <p key={i}>{p}</p>)}
+            </div>
+
+            <div className="text-[10px] font-bold tracking-[1.8px] text-[#344d3f] uppercase mb-3">Required Skills</div>
+            <div className="flex flex-wrap gap-2 mb-8">
+              {job.skills?.map(s => (
+                <span key={s} className="px-3 py-1.5 rounded-lg text-[12px] font-medium bg-[#152019] text-[#95b8a5] border border-[#294038]">{s}</span>
+              ))}
+            </div>
+
+            <Separator className="bg-[#1e2f24] mb-6" />
+
+            <div className="text-[10px] font-bold tracking-[1.8px] text-[#344d3f] uppercase mb-5">Escrow Timeline</div>
+            <div>
+              {TL_STEPS.map((step, i) => {
+                const done    = i < doneCount
+                const current = i === doneCount
+                return (
+                  <div key={i} className="flex gap-4">
+                    <div className="flex flex-col items-center">
+                      <div className={cn('size-6 rounded-full flex items-center justify-center text-[10px] font-bold flex-shrink-0',
+                        done    ? 'bg-[#0d9e75] text-white'
+                        : current? 'bg-[#152019] border-2 border-[#14c490] text-[#14c490]'
+                        :          'bg-[#152019] border border-[#294038] text-[#344d3f]'
+                      )}>
+                        {done ? '✓' : i + 1}
+                      </div>
+                      {i < TL_STEPS.length - 1 && <div className="w-px flex-1 min-h-4 bg-[#1e2f24] my-1" />}
+                    </div>
+                    <div className="pb-4 min-w-0">
+                      <div className="text-[13px] font-semibold text-[#e5f2ea]">{step.label}</div>
+                      <div className={cn('text-[11px] mt-0.5', done ? 'text-[#0d9e75]' : 'text-[#344d3f]')}>{step.sub}</div>
+                    </div>
                   </div>
-                  {i < timeline.length - 1 && <div className={styles.tlLine} />}
-                </div>
-                <div className={styles.tlInfo}>
-                  <div className={styles.tlLabel}>{step.label}</div>
-                  <div className={step.state === 'done' ? styles.tlDoneText : styles.tlSubText}>
-                    {step.sub}
-                  </div>
-                </div>
-              </div>
-            ))}
+                )
+              })}
+            </div>
           </div>
         </div>
 
         {/* ── Sidebar ── */}
-        <aside className={styles.sidebar}>
-          {/* Escrow amount */}
-          <div className={styles.sCard}>
-            <div className={styles.sCardTitle}>Escrow Amount</div>
-            <div className={styles.priceBig}>
-              ${usdcAmt} <sub>USDC</sub>
-            </div>
-            <div className={styles.priceNote}>≈ {ethAmt} ETH at current rate</div>
-            <p className={styles.swapNote}>
-              Deposit in any token — auto-swapped via Uniswap Universal Router
-            </p>
-            <div className={styles.tokenGrid}>
-              {DEPOSIT_TOKENS.map(t => (
-                <button
-                  key={t}
-                  className={`${styles.tokBtn} ${selectedToken === t ? styles.tokSel : ''}`}
-                  onClick={() => setSelectedToken(t)}
-                >
-                  {t}
-                </button>
-              ))}
-            </div>
-          </div>
+        <aside className="p-5 md:p-6 bg-[#0b1310] border-t lg:border-t-0 border-[#1e2f24] lg:sticky lg:top-16 lg:max-h-[calc(100vh-64px)] lg:overflow-y-auto space-y-3">
+          {/* Amount */}
+          <Card className="bg-[#0f1a14] border-[#1e2f24] rounded-2xl">
+            <CardContent className="p-5">
+              <div className="text-[10px] font-bold tracking-[1.5px] text-[#344d3f] uppercase mb-3">Escrow Amount</div>
+              <div className="text-[36px] font-extrabold text-[#14c490] leading-none mb-1">
+                ${formatUSDC(job.amountUSDC)}<span className="text-[14px] font-medium text-[#344d3f] ml-1">USDC</span>
+              </div>
+              <div className="text-[12px] text-[#344d3f] font-mono mb-3">≈ {ethAmt} ETH at current rate</div>
+              <p className="text-[11px] text-[#344d3f] mb-3 leading-relaxed">Deposit in any token — auto-swapped via Uniswap</p>
+              <div className="grid grid-cols-4 gap-1.5">
+                {DEPOSIT_TOKENS.map(t => (
+                  <button key={t} onClick={() => setSelectedToken(t)}
+                    className={cn('py-2 rounded-lg text-[11px] font-bold transition-all',
+                      selectedToken === t
+                        ? 'bg-[#0d9e75]/10 border border-[#0d9e75] text-[#14c490]'
+                        : 'bg-[#152019] border border-[#1e2f24] text-[#344d3f] hover:border-[#0a7a5a] hover:text-[#0d9e75]'
+                    )}>{t}</button>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
 
           {/* Client */}
-          <div className={styles.sCard}>
-            <div className={styles.sCardTitle}>Client</div>
-            <div className={styles.clientRow}>
-              <div className={styles.avatarLg}>
-                {job.client.slice(2, 4).toUpperCase()}
+          <Card className="bg-[#0f1a14] border-[#1e2f24] rounded-2xl">
+            <CardContent className="p-5">
+              <div className="text-[10px] font-bold tracking-[1.5px] text-[#344d3f] uppercase mb-3">Client</div>
+              <div className="flex items-center gap-3 mb-3">
+                <Avatar className="size-10 border border-[#294038]">
+                  <AvatarFallback className="bg-[#152019] text-[#14c490] text-sm font-bold">{job.client.slice(2,4).toUpperCase()}</AvatarFallback>
+                </Avatar>
+                <div>
+                  <div className="text-[14px] font-semibold text-[#e5f2ea] font-mono">{shortAddress(job.client)}</div>
+                  <div className="text-[11px] text-[#0d9e75] flex items-center gap-1 mt-0.5"><ShieldCheck className="size-3" /> World ID Verified</div>
+                </div>
               </div>
-              <div>
-                <div className={styles.clientName}>{shortAddress(job.client)}</div>
-                <div className={styles.clientTag}>✓ World ID Verified</div>
+              <div className="flex items-center gap-2 bg-[#0d9e75]/8 border border-[#0d9e75]/20 rounded-lg px-3 py-2 text-[12px] text-[#14c490]">
+                <div className="size-5 rounded-full bg-[#0d9e75] flex items-center justify-center text-white text-[9px] font-bold flex-shrink-0">W</div>
+                Unique human · sybil-resistant
               </div>
-            </div>
-            <div className={styles.worldRow}>
-              <div className={styles.worldOrb}>W</div>
-              Unique human · sybil-resistant
-            </div>
-          </div>
+            </CardContent>
+          </Card>
 
           {/* CTA */}
-          <div className={styles.ctaArea}>
-            {renderCTA()}
+          <div className="space-y-2">
+            {!isConnected && <p className="text-center text-[12px] text-[#344d3f] bg-[#152019] rounded-xl p-4 border border-[#1e2f24]">Connect your wallet to interact</p>}
+            {isConnected && job.status==='Open' && !isClient && (
+              <Button className="w-full bg-[#0d9e75] hover:bg-[#14c490] text-white font-bold rounded-xl h-12" onClick={handleAccept} disabled={busy}>
+                {busy ? 'Sending…' : isVerified ? 'Accept Job' : 'Verify & Accept →'}
+              </Button>
+            )}
+            {isConnected && job.status==='InProgress' && isFreelancer && (
+              <div className="space-y-2">
+                <Input value={delivUrl} onChange={e=>setDelivUrl(e.target.value)} placeholder="IPFS CID or deliverable URL"
+                  className="bg-[#152019] border-[#294038] text-[#e5f2ea] placeholder:text-[#344d3f] rounded-xl font-mono text-[13px] focus-visible:ring-[#0d9e75]" />
+                <Button className="w-full bg-[#0d9e75] hover:bg-[#14c490] text-white font-bold rounded-xl h-12" onClick={handleSubmit} disabled={busy||!delivUrl}>
+                  {busy ? 'Sending…' : 'Submit Deliverable'}
+                </Button>
+              </div>
+            )}
+            {isConnected && job.status==='Delivered' && isClient && (
+              <Button className="w-full bg-[#0d9e75] hover:bg-[#14c490] text-white font-bold rounded-xl h-12" onClick={handleRelease} disabled={busy}>
+                {busy ? 'Confirming…' : 'Approve & Release via KeeperHub'}
+              </Button>
+            )}
+            {isSuccess && (
+              <div className="flex items-center justify-center gap-2 text-[13px] text-[#14c490] font-semibold bg-[#0d9e75]/10 border border-[#0d9e75]/30 rounded-xl p-3">
+                <CheckCircle2 className="size-4" /> Transaction confirmed
+              </div>
+            )}
+            <div className="flex items-center justify-center gap-2 text-[11px] text-[#344d3f]">
+              <Zap className="size-3 text-[#0d9e75]" />Release via KeeperHub · SLA-backed
+            </div>
           </div>
         </aside>
       </div>
 
-      {/* World ID Verify Modal */}
-      {showVerifyModal && (
-        <WorldIDVerifyModal
-          onClose={() => setShowVerifyModal(false)}
-          onSuccess={() => {
-            setShowVerifyModal(false)
-            handleAcceptJob()
-          }}
-        />
+      {showVerify && (
+        <WorldIDVerifyModal onClose={() => setShowVerify(false)} onSuccess={() => { setShowVerify(false); handleAccept() }} />
       )}
     </>
   )

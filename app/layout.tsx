@@ -1,21 +1,20 @@
 import type { Metadata } from 'next'
 import './globals.css'
-import { Navbar } from '@/components/layout/Navbar'
 import { Providers } from '@/components/layout/Providers'
+import { Navbar } from '@/components/layout/Navbar'
 
 export const metadata: Metadata = {
-  title: 'TrustLance — Verified Freelance Escrow',
-  description:
-    'Sybil-resistant freelance marketplace. Every participant is World ID verified. Payments held in USDC escrow and released via KeeperHub.',
+  title: 'TrustLance — Freelance Without the Risk',
+  description: 'Sybil-resistant freelance escrow. World ID verified. KeeperHub guaranteed. Uniswap-powered.',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <body>
+    <html lang="en" className="dark">
+      <body className="bg-[#040705] text-[#e5f2ea] min-h-screen">
         <Providers>
           <Navbar />
-          <main>{children}</main>
+          <main className="pt-16">{children}</main>
         </Providers>
       </body>
     </html>
