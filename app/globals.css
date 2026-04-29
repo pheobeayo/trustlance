@@ -2,105 +2,125 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* ── tw-animate-css keyframes (inlined — avoids resolution issues) ── */
+/* ─── tw-animate-css inlined ──────────────────────────────────── */
 @layer utilities {
-  .animate-in {
-    animation-name: enter;
-    animation-duration: var(--tw-duration, 150ms);
-    animation-timing-function: var(--tw-ease, ease);
-    animation-fill-mode: both;
-  }
-  .animate-out {
-    animation-name: exit;
-    animation-duration: var(--tw-duration, 150ms);
-    animation-timing-function: var(--tw-ease, ease);
-    animation-fill-mode: both;
-  }
-
+  .animate-in  { animation-name: enter; animation-duration: var(--tw-duration, 150ms); animation-timing-function: var(--tw-ease, ease); animation-fill-mode: both; }
+  .animate-out { animation-name: exit;  animation-duration: var(--tw-duration, 150ms); animation-timing-function: var(--tw-ease, ease); animation-fill-mode: both; }
   .fade-in-0   { --tw-enter-opacity: 0; }
-  .fade-out-0  { --tw-exit-opacity: 0; }
+  .fade-out-0  { --tw-exit-opacity: 0;  }
   .zoom-in-95  { --tw-enter-scale: 0.95; }
-  .zoom-out-95 { --tw-exit-scale: 0.95; }
-
-  .slide-in-from-top-2      { --tw-enter-translate-y: -0.5rem; }
-  .slide-in-from-bottom-2   { --tw-enter-translate-y:  0.5rem; }
-  .slide-in-from-bottom-3   { --tw-enter-translate-y:  0.75rem; }
-  .slide-in-from-bottom-4   { --tw-enter-translate-y:  1rem; }
-  .slide-in-from-bottom-6   { --tw-enter-translate-y:  1.5rem; }
-  .slide-in-from-bottom-8   { --tw-enter-translate-y:  2rem; }
-  .slide-in-from-left-1\/2  { --tw-enter-translate-x: -50%; }
-  .slide-in-from-right-2    { --tw-enter-translate-x:  0.5rem; }
-  .slide-in-from-left-2     { --tw-enter-translate-x: -0.5rem; }
+  .zoom-out-95 { --tw-exit-scale:  0.95; }
+  .slide-in-from-top-2        { --tw-enter-translate-y: -0.5rem; }
+  .slide-in-from-bottom-2     { --tw-enter-translate-y:  0.5rem; }
+  .slide-in-from-bottom-3     { --tw-enter-translate-y:  0.75rem; }
+  .slide-in-from-bottom-4     { --tw-enter-translate-y:  1rem; }
+  .slide-in-from-bottom-6     { --tw-enter-translate-y:  1.5rem; }
+  .slide-in-from-bottom-8     { --tw-enter-translate-y:  2rem; }
+  .slide-in-from-left-1\/2    { --tw-enter-translate-x: -50%; }
+  .slide-in-from-right-2      { --tw-enter-translate-x:  0.5rem; }
+  .slide-in-from-left-2       { --tw-enter-translate-x: -0.5rem; }
   .slide-in-from-top-\[48\%\] { --tw-enter-translate-y: -48%; }
-
-  .slide-out-to-top         { --tw-exit-translate-y: -100%; }
-  .slide-out-to-bottom      { --tw-exit-translate-y:  100%; }
-  .slide-out-to-left        { --tw-exit-translate-x: -100%; }
-  .slide-out-to-right       { --tw-exit-translate-x:  100%; }
-  .slide-out-to-left-1\/2   { --tw-exit-translate-x: -50%; }
-  .slide-out-to-top-\[48\%\]{ --tw-exit-translate-y: -48%; }
-
+  .slide-out-to-top            { --tw-exit-translate-y: -100%; }
+  .slide-out-to-bottom         { --tw-exit-translate-y:  100%; }
+  .slide-out-to-left           { --tw-exit-translate-x: -100%; }
+  .slide-out-to-right          { --tw-exit-translate-x:  100%; }
+  .slide-out-to-left-1\/2      { --tw-exit-translate-x: -50%; }
+  .slide-out-to-top-\[48\%\]   { --tw-exit-translate-y: -48%; }
   .duration-150 { --tw-duration: 150ms; }
   .duration-200 { --tw-duration: 200ms; }
   .duration-300 { --tw-duration: 300ms; }
   .duration-500 { --tw-duration: 500ms; }
   .duration-700 { --tw-duration: 700ms; }
-
-  .delay-1000 { animation-delay: 1000ms; }
+  .delay-1000   { animation-delay: 1000ms; }
+  .scrollbar-none { scrollbar-width: none; }
+  .scrollbar-none::-webkit-scrollbar { display: none; }
 }
 
 @keyframes enter {
   from {
     opacity: var(--tw-enter-opacity, 1);
-    transform:
-      translate(var(--tw-enter-translate-x, 0), var(--tw-enter-translate-y, 0))
-      scale(var(--tw-enter-scale, 1))
-      rotate(var(--tw-enter-rotate, 0));
+    transform: translate(var(--tw-enter-translate-x, 0), var(--tw-enter-translate-y, 0))
+               scale(var(--tw-enter-scale, 1)) rotate(var(--tw-enter-rotate, 0));
   }
 }
 @keyframes exit {
   to {
     opacity: var(--tw-exit-opacity, 1);
-    transform:
-      translate(var(--tw-exit-translate-x, 0), var(--tw-exit-translate-y, 0))
-      scale(var(--tw-exit-scale, 1))
-      rotate(var(--tw-exit-rotate, 0));
+    transform: translate(var(--tw-exit-translate-x, 0), var(--tw-exit-translate-y, 0))
+               scale(var(--tw-exit-scale, 1)) rotate(var(--tw-exit-rotate, 0));
   }
 }
 
-/* ── CSS custom properties ─────────────────────────────────────── */
+/* ─── Brand tokens (constant across themes) ────────────────────── */
 :root {
-  --radius: 0.625rem;
-  --background: oklch(0.145 0.012 160);
-  --foreground: oklch(0.94 0.02 155);
-  --card: oklch(0.18 0.015 158);
-  --card-foreground: oklch(0.94 0.02 155);
-  --popover: oklch(0.16 0.013 158);
-  --popover-foreground: oklch(0.94 0.02 155);
-  --primary: oklch(0.58 0.13 162);
-  --primary-foreground: oklch(1 0 0);
-  --secondary: oklch(0.22 0.018 158);
-  --secondary-foreground: oklch(0.74 0.05 158);
-  --muted: oklch(0.22 0.018 158);
-  --muted-foreground: oklch(0.54 0.04 158);
-  --accent: oklch(0.25 0.022 158);
-  --accent-foreground: oklch(0.74 0.05 158);
-  --destructive: oklch(0.65 0.19 25);
-  --border: oklch(0.28 0.025 158);
-  --input: oklch(0.22 0.018 158);
-  --ring: oklch(0.58 0.13 162);
-
   --teal:    #0d9e75;
   --teal-hi: #14c490;
   --teal-lo: #0a7a5a;
+  --radius:  0.625rem;
 }
 
-/* ── Base layer ────────────────────────────────────────────────── */
+/* ─── DARK theme ────────────────────────────────────────────────── */
+:root,
+.dark {
+  /* Page backgrounds */
+  --bg-page:    #040705;
+  --bg-surface: #0b1310;
+  --bg-card:    #0f1a14;
+  --bg-input:   #152019;
+  --bg-hover:   #1b2b21;
+
+  /* Borders */
+  --border-subtle: #162118;
+  --border-base:   #1e2f24;
+  --border-strong: #294038;
+
+  /* Text */
+  --text-primary:   #e5f2ea;
+  --text-secondary: #95b8a5;
+  --text-muted:     #567a68;
+  --text-faint:     #344d3f;
+
+  /* Overlay */
+  --overlay: rgba(0,0,0,0.75);
+
+  /* Scrollbar */
+  --scroll-track: #060a08;
+  --scroll-thumb: #294038;
+  --scroll-thumb-hover: #0a7a5a;
+}
+
+/* ─── LIGHT theme ───────────────────────────────────────────────── */
+.light {
+  /* Page backgrounds */
+  --bg-page:    #f2fbf6;
+  --bg-surface: #ffffff;
+  --bg-card:    #f7fdf9;
+  --bg-input:   #edf7f2;
+  --bg-hover:   #e2f2ea;
+
+  /* Borders */
+  --border-subtle: #d4ede2;
+  --border-base:   #b8dece;
+  --border-strong: #8ec9b0;
+
+  /* Text */
+  --text-primary:   #0a1f15;
+  --text-secondary: #1a5c3d;
+  --text-muted:     #3d7a5a;
+  --text-faint:     #6baa8a;
+
+  /* Overlay */
+  --overlay: rgba(0,0,0,0.5);
+
+  /* Scrollbar */
+  --scroll-track: #f2fbf6;
+  --scroll-thumb: #8ec9b0;
+  --scroll-thumb-hover: #0d9e75;
+}
+
+/* ─── Base styles using the variables ──────────────────────────── */
 @layer base {
-  * {
-    box-sizing: border-box;
-    border-color: var(--border);
-  }
+  * { box-sizing: border-box; }
 
   html {
     scroll-behavior: smooth;
@@ -109,29 +129,17 @@
   }
 
   body {
-    background-color: #040705;
-    color: #e5f2ea;
+    background-color: var(--bg-page);
+    color: var(--text-primary);
     overflow-x: hidden;
     min-height: 100svh;
+    transition: background-color 0.25s ease, color 0.2s ease;
   }
 
-  ::selection {
-    background-color: rgba(13, 158, 117, 0.25);
-    color: #14c490;
-  }
+  ::selection { background-color: rgba(13,158,117,0.25); color: var(--teal-hi); }
 
   ::-webkit-scrollbar       { width: 5px; height: 5px; }
-  ::-webkit-scrollbar-track { background: #060a08; }
-  ::-webkit-scrollbar-thumb { background: #294038; border-radius: 3px; }
-  ::-webkit-scrollbar-thumb:hover { background: #0a7a5a; }
-}
-
-/* ── Utilities ─────────────────────────────────────────────────── */
-@layer utilities {
-  .scrollbar-none {
-    scrollbar-width: none;
-  }
-  .scrollbar-none::-webkit-scrollbar {
-    display: none;
-  }
+  ::-webkit-scrollbar-track { background: var(--scroll-track); }
+  ::-webkit-scrollbar-thumb { background: var(--scroll-thumb); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--scroll-thumb-hover); }
 }

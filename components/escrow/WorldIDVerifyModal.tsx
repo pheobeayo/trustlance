@@ -1,4 +1,5 @@
 'use client'
+
 import { useWriteContract } from 'wagmi'
 import { base } from 'wagmi/chains'
 import { IDKitWidget, VerificationLevel, type ISuccessResult } from '@worldcoin/idkit'
@@ -19,7 +20,9 @@ export function WorldIDVerifyModal({ onClose, onSuccess }: Props) {
 
   async function handleVerify(_result: ISuccessResult) {
     writeContract({
-      address: TRUSTLANCE_ADDRESS[base.id], abi: TRUSTLANCE_ABI, functionName: 'setVerified',
+      address: TRUSTLANCE_ADDRESS[base.id],
+      abi: TRUSTLANCE_ABI,
+      functionName: 'setVerified',
       args: ['0x0000000000000000000000000000000000000000'],
     })
     onSuccess()
@@ -27,19 +30,28 @@ export function WorldIDVerifyModal({ onClose, onSuccess }: Props) {
 
   return (
     <Dialog open onOpenChange={onClose}>
-      <DialogContent className="bg-[#0f1a14] border-[#294038] rounded-2xl max-w-sm w-[90vw] p-8 gap-0">
-        <div className="size-16 rounded-full bg-[#0d9e75]/10 border-2 border-[#0a7a5a] flex items-center justify-center mx-auto mb-5 text-2xl font-extrabold text-[#14c490]">W</div>
+      <DialogContent className="max-w-sm w-[90vw] p-8 gap-0 rounded-2xl">
+        <div className="size-16 rounded-full flex items-center justify-center mx-auto mb-5 text-2xl font-extrabold"
+          style={{ background: 'rgba(13,158,117,0.1)', border: '2px solid var(--teal-lo)', color: 'var(--teal-hi)' }}>
+          W
+        </div>
         <DialogHeader className="text-center mb-3">
-          <DialogTitle className="text-[22px] font-extrabold text-[#e5f2ea]">Verify Your Humanity</DialogTitle>
+          <DialogTitle className="text-[22px] font-extrabold" style={{ color: 'var(--text-primary)' }}>
+            Verify Your Humanity
+          </DialogTitle>
         </DialogHeader>
-        <p className="text-[13px] text-[#95b8a5] text-center leading-relaxed mb-5">
-          TrustLance requires World ID to prevent sybil attacks. One-time, privacy-preserving.
+        <p className="text-[13px] text-center leading-relaxed mb-5 transition-colors" style={{ color: 'var(--text-secondary)' }}>
+          TrustLance requires World ID to prevent sybil attacks. One-time, privacy-preserving — no personal data stored.
         </p>
         <div className="space-y-2 mb-6">
           {STEPS.map((s, i) => (
-            <div key={i} className="flex items-center gap-3 bg-[#152019] border border-[#1e2f24] rounded-xl px-4 py-3">
-              <div className="size-6 rounded-full bg-[#0d9e75] text-white flex items-center justify-center text-[11px] font-bold flex-shrink-0">{i + 1}</div>
-              <span className="text-[12px] text-[#95b8a5]">{s}</span>
+            <div key={i} className="flex items-center gap-3 rounded-xl px-4 py-3 transition-colors"
+              style={{ backgroundColor: 'var(--bg-input)', border: '1px solid var(--border-base)' }}>
+              <div className="size-6 rounded-full flex items-center justify-center text-[11px] font-bold flex-shrink-0 text-white"
+                style={{ backgroundColor: 'var(--teal)' }}>
+                {i + 1}
+              </div>
+              <span className="text-[12px] transition-colors" style={{ color: 'var(--text-secondary)' }}>{s}</span>
             </div>
           ))}
         </div>
@@ -50,12 +62,18 @@ export function WorldIDVerifyModal({ onClose, onSuccess }: Props) {
           onSuccess={handleVerify}
         >
           {({ open }) => (
-            <Button onClick={open} className="w-full bg-[#0d9e75] hover:bg-[#14c490] text-white font-bold rounded-xl h-12 text-[15px] mb-2">
+            <Button
+              onClick={open}
+              className="w-full h-12 text-[15px] font-bold rounded-xl text-white mb-2"
+              style={{ backgroundColor: 'var(--teal)' }}
+            >
               Verify with World ID
             </Button>
           )}
         </IDKitWidget>
-        <p className="text-center text-[11px] text-[#344d3f]">Powered by World · your data stays yours</p>
+        <p className="text-center text-[11px] transition-colors" style={{ color: 'var(--text-faint)' }}>
+          Powered by World · your data stays yours
+        </p>
       </DialogContent>
     </Dialog>
   )

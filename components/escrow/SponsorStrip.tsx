@@ -1,20 +1,21 @@
-import { Globe, RefreshCw, Zap } from 'lucide-react'
-
-const SPONSORS = [
-  { badge: 'WORLD ID',  name: 'Proof of Personhood',    desc: 'Sybil-resistant identity layer'     },
-  { badge: 'UNISWAP',   name: 'Token-Agnostic Deposits', desc: 'ETH / USDT / DAI → USDC auto-swap' },
-  { badge: 'KEEPERHUB', name: 'Guaranteed Release',      desc: 'SLA-backed execution with retry'    },
-]
-
+'use client'
 export function SponsorStrip() {
+  const SPONSORS = [
+    { badge: 'WORLD ID',  name: 'Proof of Personhood',    desc: 'Sybil-resistant identity layer'     },
+    { badge: 'UNISWAP',   name: 'Token-Agnostic Deposits', desc: 'ETH / USDT / DAI → USDC auto-swap' },
+    { badge: 'KEEPERHUB', name: 'Guaranteed Release',      desc: 'SLA-backed execution with retry'    },
+  ]
   return (
-    <div className="flex bg-[#0b1310] border-b border-[#1e2f24] overflow-x-auto scrollbar-none">
+    <div className="flex overflow-x-auto scrollbar-none transition-colors duration-300" style={{ backgroundColor: 'var(--bg-surface)', borderBottom: '1px solid var(--border-base)' }}>
       {SPONSORS.map((s, i) => (
-        <div key={i} className="flex-1 min-w-[180px] flex items-center gap-3 px-5 md:px-7 py-3.5 border-r border-[#1e2f24] last:border-r-0 hover:bg-[#0f1a14] transition-colors">
-          <span className="flex-shrink-0 text-[10px] font-extrabold tracking-wider text-[#14c490] bg-[#0d9e75]/10 border border-[#0d9e75]/30 px-2 py-1 rounded whitespace-nowrap">{s.badge}</span>
+        <div key={i} className="flex-1 min-w-[180px] flex items-center gap-3 px-5 md:px-7 py-3.5 transition-colors"
+          style={{ borderRight: '1px solid var(--border-base)' }}
+          onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'var(--bg-card)')}
+          onMouseLeave={e => (e.currentTarget.style.backgroundColor = '')}>
+          <span className="flex-shrink-0 text-[10px] font-extrabold tracking-wider whitespace-nowrap px-2 py-1 rounded" style={{ color: 'var(--teal-hi)', background: 'rgba(13,158,117,0.1)', border: '1px solid rgba(13,158,117,0.3)' }}>{s.badge}</span>
           <div>
-            <div className="text-[12px] font-semibold text-[#95b8a5]">{s.name}</div>
-            <div className="text-[10px] text-[#344d3f]">{s.desc}</div>
+            <div className="text-[12px] font-semibold transition-colors" style={{ color: 'var(--text-secondary)' }}>{s.name}</div>
+            <div className="text-[10px] transition-colors" style={{ color: 'var(--text-faint)' }}>{s.desc}</div>
           </div>
         </div>
       ))}

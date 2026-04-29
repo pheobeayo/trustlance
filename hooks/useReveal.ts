@@ -1,14 +1,9 @@
 'use client'
 import { useEffect, useRef } from 'react'
 
-/**
- * Returns a ref-setter function and a CSS class name.
- * Any element passed to the ref setter will animate in
- * when it enters the viewport.
- */
+/** Attaches a scroll-parallax translate to the returned ref. */
 export function useReveal(visibleClass: string) {
   const refs = useRef<HTMLElement[]>([])
-
   useEffect(() => {
     const io = new IntersectionObserver(
       entries => entries.forEach(e => {
