@@ -1,0 +1,22 @@
+{
+  "TrustLanceModule": {
+    "0g-testnet": {
+      "comment":       "Leave addresses empty — deploy.ts will auto-deploy mocks",
+      "usdc":          "0x0000000000000000000000000000000000000000",
+      "uniswapRouter": "0x0000000000000000000000000000000000000000",
+      "permit2":       "0x0000000000000000000000000000000000000000",
+      "weth":          "0x0000000000000000000000000000000000000000",
+      "keeperHub":     "0x0000000000000000000000000000000000000000",
+      "keeper":        "0x0000000000000000000000000000000000000000"
+    },
+    "0g-mainnet": {
+      "comment":       "Fill in real addresses when deploying to mainnet",
+      "usdc":          "",
+      "uniswapRouter": "",
+      "permit2":       "",
+      "weth":          "",
+      "keeperHub":     "",
+      "keeper":        ""
+    }
+  }
+}

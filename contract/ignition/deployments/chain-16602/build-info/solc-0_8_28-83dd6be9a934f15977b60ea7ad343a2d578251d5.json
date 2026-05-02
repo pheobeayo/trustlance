@@ -1,0 +1,49 @@
+{
+  "_format": "hh3-sol-build-info-1",
+  "id": "solc-0_8_28-83dd6be9a934f15977b60ea7ad343a2d578251d5",
+  "solcVersion": "0.8.28",
+  "solcLongVersion": "0.8.28+commit.7893614a",
+  "compilerType": "solc",
+  "toolVersions": {
+    "hardhat": "3.4.3"
+  },
+  "userSourceNameMap": {
+    "contracts/test/MockKeeperHub.sol": "project/contracts/test/MockKeeperHub.sol"
+  },
+  "input": {
+    "language": "Solidity",
+    "settings": {
+      "evmVersion": "cancun",
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "outputSelection": {
+        "*": {
+          "": [
+            "ast"
+          ],
+          "*": [
+            "abi",
+            "evm.bytecode.linkReferences",
+            "evm.bytecode.object",
+            "evm.bytecode.opcodes",
+            "evm.bytecode.sourceMap",
+            "evm.deployedBytecode.immutableReferences",
+            "evm.deployedBytecode.linkReferences",
+            "evm.deployedBytecode.object",
+            "evm.deployedBytecode.opcodes",
+            "evm.deployedBytecode.sourceMap",
+            "evm.methodIdentifiers"
+          ]
+        }
+      },
+      "remappings": []
+    },
+    "sources": {
+      "project/contracts/test/MockKeeperHub.sol": {
+        "content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.24;\n\n/// @notice Mock KeeperHub — stores tasks and lets the test executor call them.\ncontract MockKeeperHub {\n    enum TaskStatus { Pending, Executed, Cancelled, Failed }\n\n    struct Task {\n        address    target;\n        bytes      callData;\n        uint256    deadline;\n        uint256    gasLimit;\n        TaskStatus status;\n    }\n\n    uint256 private _nonce;\n    mapping(bytes32 => Task) public tasks;\n\n    event TaskRegistered(bytes32 indexed taskId, address target);\n    event TaskExecuted  (bytes32 indexed taskId);\n    event TaskCancelled (bytes32 indexed taskId);\n\n    function registerTask(\n        address target,\n        bytes calldata callData,\n        uint256 deadline,\n        uint256 gasLimit\n    ) external returns (bytes32 taskId) {\n        taskId = keccak256(abi.encodePacked(target, callData, deadline, _nonce++));\n        tasks[taskId] = Task({\n            target:   target,\n            callData: callData,\n            deadline: deadline,\n            gasLimit: gasLimit,\n            status:   TaskStatus.Pending\n        });\n        emit TaskRegistered(taskId, target);\n    }\n\n    /// @notice Executes a registered task — called by the keeper EOA in tests.\n    ///         msg.sender arriving at the target = address(this) = keeper immutable ✓\n    function executeTask(bytes32 taskId) external {\n        Task storage t = tasks[taskId];\n        require(t.status == TaskStatus.Pending, \"Not pending\");\n        require(block.timestamp <= t.deadline,  \"Deadline passed\");\n\n        t.status = TaskStatus.Executed;\n\n        (bool ok,) = t.target.call{gas: t.gasLimit}(t.callData);\n        require(ok, \"Task execution failed\");\n\n        emit TaskExecuted(taskId);\n    }\n\n    /// @notice Lets a test EOA trigger _executeRelease directly,\n    ///         with MockKeeperHub as msg.sender — matching the keeper immutable.\n    function directCall(address target, bytes calldata data) external {\n        (bool ok,) = target.call(data);\n        require(ok, \"directCall failed\");\n    }\n\n    function cancelTask(bytes32 taskId) external {\n        tasks[taskId].status = TaskStatus.Cancelled;\n        emit TaskCancelled(taskId);\n    }\n\n    function getTask(bytes32 taskId) external view returns (Task memory) {\n        return tasks[taskId];\n    }\n}"
+      }
+    }
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "_format": "hh3-sol-build-info-1",
+  "id": "solc-0_8_28-5596014729164639a5ab56825d330f876fee8298",
+  "solcVersion": "0.8.28",
+  "solcLongVersion": "0.8.28+commit.7893614a",
+  "compilerType": "solc",
+  "toolVersions": {
+    "hardhat": "3.4.3"
+  },
+  "userSourceNameMap": {
+    "contracts/test/MockPermit2.sol": "project/contracts/test/MockPermit2.sol"
+  },
+  "input": {
+    "language": "Solidity",
+    "settings": {
+      "evmVersion": "cancun",
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "outputSelection": {
+        "*": {
+          "": [
+            "ast"
+          ],
+          "*": [
+            "abi",
+            "evm.bytecode.linkReferences",
+            "evm.bytecode.object",
+            "evm.bytecode.opcodes",
+            "evm.bytecode.sourceMap",
+            "evm.deployedBytecode.immutableReferences",
+            "evm.deployedBytecode.linkReferences",
+            "evm.deployedBytecode.object",
+            "evm.deployedBytecode.opcodes",
+            "evm.deployedBytecode.sourceMap",
+            "evm.methodIdentifiers"
+          ]
+        }
+      },
+      "remappings": []
+    },
+    "sources": {
+      "project/contracts/test/MockPermit2.sol": {
+        "content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.24;\n\n/// @notice Mock Permit2 — records approvals, always succeeds.\ncontract MockPermit2 {\n    struct Allowance {\n        uint160 amount;\n        uint48  expiration;\n    }\n\n    mapping(address => mapping(address => mapping(address => Allowance))) public allowances;\n\n    function approve(\n        address token,\n        address spender,\n        uint160 amount,\n        uint48  expiration\n    ) external {\n        allowances[msg.sender][token][spender] = Allowance(amount, expiration);\n    }\n\n    function allowance(\n        address user,\n        address token,\n        address spender\n    ) external view returns (uint160 amount, uint48 expiration, uint48 nonce) {\n        Allowance memory a = allowances[user][token][spender];\n        return (a.amount, a.expiration, 0);\n    }\n}\n"
+      }
+    }
+  }
+}

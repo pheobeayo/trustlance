@@ -1,0 +1,8 @@
+{
+  "TrustLanceModule#MockKeeperHub": "0x2b8166fd6Ae1a4a216b3A2ABC80063147A65fb08",
+  "TrustLanceModule#MockPermit2": "0xDA49e1bCc513226Dfa9c80FA16b04f104f6EBAe4",
+  "TrustLanceModule#MockUSDC": "0x592ABb32AeFBcD2457cC6f3818FAb471db8160fB",
+  "TrustLanceModule#MockWETH": "0xaf89d4F79c93E787FeD8Deac82Cc6D4c61c4bB1e",
+  "TrustLanceModule#MockRouter": "0x7e9e22e4D05B15C640b251Da2624e56a3cC2295B",
+  "TrustLanceModule#TrustLanceEscrow": "0xfE75E4472359968f5EEd507021616Ee8Fb6BD540"
+}
