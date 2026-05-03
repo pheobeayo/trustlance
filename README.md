@@ -21,9 +21,9 @@ Built for ETHGlobal Open Agents.
 Crypto freelance escrow fails in two predictable ways:
 
 1. Gas spikes cause release transactions to fail silently. Freelancers wait. Clients are confused. Nobody wins.
-2. Clients deposit ETH at $3,000. By the time work is delivered the price is $1,800. The agreed dollar amount evaporates mid-project.
+2. Clients deposit ETH at $3,000. By the time work is delivered, the price is $1,800. The agreed dollar amount evaporates mid-project.
 
-TrustLance solves both. Every deposit is swapped to USDC on the way in. Every release is executed by KeeperHub with retry logic and a full audit trail.
+TrustLance solves both. Every deposit is swapped to USDC on the way in. KeeperHub executes every release with retry logic and a full audit trail.
 
 ---
 
@@ -174,18 +174,18 @@ npx hardhat run scripts/deploy.ts --network 0g-testnet
 ## Demo Script (90 seconds)
 
 1. Open `/jobs`. Show the live job board reading from 0G chain.
-2. Click "Post a Job". Enter title and description. Click "Mint 1,000 USDC" (testnet faucet). Approve then create escrow.
+2. Click "Post a Job". Enter title and description. Click "Mint 1,000 USDC" (testnet faucet). Approve, then create escrow.
 3. Switch wallet. Open the job. Click "Accept Job". 30-day clock starts on-chain.
-4. Submit an IPFS deliverable CID. Switch back to client wallet.
-5. Click "Approve & Release via KeeperHub". KeeperHub task is registered on-chain. Executor calls `_executeRelease`. USDC arrives in freelancer wallet.
+4. Submit an IPFS deliverable CID. Switch back to the client wallet.
+5. Click "Approve & Release via KeeperHub". The KeeperHub task is registered on-chain. Executor calls `_executeRelease`. USDC arrives in the freelancer wallet.
 6. Show the escrow timeline: all 5 steps complete.
 
 ---
 
 ## Links
 
-- Live demo: [to be added]
-- Demo video: [to be added]
+- Production link: https://trustlance-og.vercel.app/
+- Demo video: https://www.loom.com/share/cad92d7848954a9c8d9fb15ad2876d27
 - Contract on 0G Explorer: https://chainscan-galileo.0g.ai/address/0xfE75E4472359968f5EEd507021616Ee8Fb6BD540
 - Uniswap docs: https://developers.uniswap.org
 - KeeperHub docs: https://docs.keeperhub.com
