@@ -14,7 +14,7 @@ export function LandingCTA() {
       <div aria-hidden className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(800px,120vw)] h-[min(400px,60vw)] rounded-full" style={{ background: 'radial-gradient(ellipse,rgba(13,158,117,0.12) 0%,transparent 65%)' }} />
       <div className="relative z-10 opacity-0 translate-y-6 transition-all duration-700 flex flex-col items-center gap-6" ref={ref as any}>
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold tracking-wide" style={{ color: 'var(--teal-hi)', background: 'rgba(13,158,117,0.1)', border: '1px solid rgba(13,158,117,0.3)' }}>
-          <span className="size-1.5 rounded-full animate-pulse" style={{ backgroundColor: 'var(--teal-hi)' }} />Now live on Base Mainnet
+          <span className="size-1.5 rounded-full animate-pulse" style={{ backgroundColor: 'var(--teal-hi)' }} />Now live on OG Galileo Testnet
         </div>
         <h2 className="text-[clamp(32px,5.5vw,68px)] font-extrabold leading-[1.08] tracking-tight max-w-3xl transition-colors" style={{ color: 'var(--text-primary)' }}>
           Ship your next contract<br /><span style={{ color: 'var(--teal-hi)' }}>without the trust tax.</span>
@@ -32,7 +32,7 @@ export function LandingCTA() {
         </div>
         <p className="flex items-center gap-2 text-[11px] flex-wrap justify-center text-center transition-colors" style={{ color: 'var(--text-faint)' }}>
           <span className="size-1 rounded-full inline-block flex-shrink-0" style={{ backgroundColor: 'var(--teal)' }} />
-          Verification takes 2 minutes · World ID required once · 0% platform fee forever
+          Verification takes 2 minutes · 0% platform fee forever
         </p>
       </div>
     </section>

@@ -18,7 +18,7 @@ export function LandingHero() {
         <Badge className="gap-2 px-4 py-1.5 rounded-full text-xs font-semibold tracking-wide text-[var(--teal-hi)]"
           style={{ background: 'rgba(13,158,117,0.1)', border: '1px solid rgba(13,158,117,0.3)' }}>
           <span className="size-1.5 rounded-full bg-[var(--teal-hi)] animate-pulse" />
-          Built for ETHGlobal Open · Base Mainnet
+          Built for ETHGlobal Open · OG Galileo Testnet Exclusive
         </Badge>
 
         <h1 className="text-[clamp(44px,9vw,96px)] font-extrabold leading-[1.0] tracking-[-0.03em] max-w-4xl transition-colors duration-300"

@@ -1,3 +1,4 @@
+'use client'
 import { Hero }          from '@/components/escrow/Hero'
 import { SponsorStrip }  from '@/components/escrow/SponsorStrip'
 import { JobFilters }    from '@/components/escrow/JobFilters'

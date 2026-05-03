@@ -1,15 +1,9 @@
-import { MOCK_JOBS } from '@/lib/mockData'
+'use client'
+import { use } from 'react'
 import { JobDetail } from '@/components/escrow/JobDetail'
-import { notFound } from 'next/navigation'
 
-interface Props { params: { id: string } }
-
-export function generateStaticParams() {
-  return MOCK_JOBS.map(j => ({ id: String(j.id) }))
-}
-
-export default function JobDetailPage({ params }: Props) {
-  const job = MOCK_JOBS.find(j => j.id === Number(params.id))
-  if (!job) notFound()
-  return <JobDetail job={job} />
+export default function JobDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params)
+  const jobId  = BigInt(id)
+  return <JobDetail jobId={jobId} />
 }

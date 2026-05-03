@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Menu, X } from 'lucide-react'
@@ -11,9 +12,9 @@ import { ThemeToggle } from '@/components/layout/ThemeToggle'
 import { cn } from '@/lib/utils'
 
 const LINKS = [
-  { href: '/',          label: 'Home'       },
-  { href: '/jobs',      label: 'Browse Jobs'},
-  { href: '/jobs/post', label: 'Post a Job' },
+  { href: '/',          label: 'Home'        },
+  { href: '/jobs',      label: 'Browse Jobs' },
+  { href: '/jobs/post', label: 'Post a Job'  },
 ]
 
 export function Navbar() {
@@ -21,14 +22,19 @@ export function Navbar() {
   const [open, setOpen] = useState(false)
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-5 md:px-10 h-16 backdrop-blur-xl border-b transition-colors duration-300"
+    <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-5 md:px-10 h-16 backdrop-blur-xl border-b transition-colors duration-300 overflow-hidden"
       style={{ backgroundColor: 'color-mix(in srgb, var(--bg-surface) 90%, transparent)', borderColor: 'var(--border-base)' }}>
 
       {/* Logo */}
-      <Link href="/" className="flex items-center gap-2 font-extrabold text-[18px] tracking-tight flex-shrink-0 hover:opacity-80 transition-opacity text-[var(--teal-hi)]">
-        <span className="size-6 rounded-[5px] flex items-center justify-center text-[10px] rotate-45 transition-colors"
-          style={{ background: 'rgba(13,158,117,0.1)', border: '1px solid var(--teal-lo)' }}>✦</span>
-        TrustLance
+      <Link href="/" className="flex items-center flex-shrink-0 hover:opacity-80 transition-opacity h-full py-2">
+        <Image
+          src="/logo.png"
+          alt="TrustLance"
+          width={140}
+          height={44}
+          className="object-contain h-full w-auto"
+          priority
+        />
       </Link>
 
       {/* Desktop nav */}
@@ -63,6 +69,17 @@ export function Navbar() {
           <SheetContent side="right" className="w-[280px] pt-16 transition-colors duration-300"
             style={{ backgroundColor: 'var(--bg-surface)', borderColor: 'var(--border-base)' }}>
             <div className="flex flex-col gap-1">
+              {/* Logo in drawer */}
+              <div className="px-4 pb-4 mb-2" style={{ borderBottom: '1px solid var(--border-base)' }}>
+                <Image
+                  src="/logo.png"
+                  alt="TrustLance"
+                  width={120}
+                  height={48}
+                  className="object-contain"
+                />
+              </div>
+
               {LINKS.map(l => (
                 <Link key={l.href} href={l.href}
                   className={cn(
